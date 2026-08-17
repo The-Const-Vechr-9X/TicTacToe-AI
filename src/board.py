@@ -5,11 +5,12 @@ class Board():
 
     def draw(self) -> None:
         initial_index = 0
+        sqrt_board_size = int(self.board_size ** 0.5)
 
-        for _ in range(int(self.board_size ** 0.5)):
-            print(" -------------")
+        for _ in range(sqrt_board_size):
+            print(" -" + "----" * sqrt_board_size)
 
-            for i in range(initial_index, initial_index + int(self.board_size ** 0.5)):
+            for i in range(initial_index, initial_index + sqrt_board_size):
                 if self.status_dict[i] == 0:
                     print(f" |  ", end="")
                 elif self.status_dict[i] == -1:
@@ -19,4 +20,4 @@ class Board():
 
             print(" | ")
 
-        print(" -------------")
+        print(" -" + "----" * sqrt_board_size)
