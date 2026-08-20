@@ -72,13 +72,41 @@ class Game():
         return cursor
 
     def play(self, stdscr: curses.window) -> None:
-        pass
+        self.players = [
+            HumanPlayer("Игрок 1", 'X'),
+            HumanPlayer("Игрок 2", 'O')
+        ]
+        self.current_player_index = 0
+
+        while True:
+            current = self.players[self.current_player_index]
+            current.make_move(self.board, stdscr)
+
+            if self.board.is_win(current.symbol):
+                self.show_winner(stdscr, current)
+                break
+
+            if self.board.is_full():
+                self.show_draw(stdscr)
+                break
+
+            self.current_player_index = 1 - self.current_player_index
+
+        self.board = Board()
 
     def play_again(self, stdscr: curses.window) -> bool:
         pass
 
     def show_winner(self, stdscr: curses.window, player: HumanPlayer) -> None:
-        pass
+        stdscr.clear()
+        self.board.draw(stdscr)
+        stdscr.addstr(10, 0, f"Победил {player.name}!")
+        stdscr.refresh()
+        stdscr.getch()
 
     def show_draw(self, stdscr: curses.window) -> None:
-        pass
+        stdscr.clear()
+        self.board.draw(stdscr)
+        stdscr.addstr(10, 0, "Ничья!")
+        stdscr.refresh()
+        stdscr.getch()
