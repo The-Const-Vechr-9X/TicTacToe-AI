@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from board import Board
+from .board import Board
 import curses
 
 
@@ -21,27 +21,34 @@ class HumanPlayer(Player):
         super().__init__(name, symbol, score)
 
     def make_move(self, board: Board, stdscr: curses.window):
-        highlight_pos = 0
+        cursor = 0
         sqrt_board_size = int(board.board_size ** 0.5)
         stdscr.keypad(True)
 
         while True:
-            board.draw(stdscr, highlight_pos)
+            board.draw(stdscr, cursor)
 
             key = stdscr.getch()
 
-            if key == curses.KEY_UP:
-                if highlight_pos // sqrt_board_size > 0:
-                    highlight_pos -= sqrt_board_size
-            elif key == curses.KEY_DOWN:
-                if highlight_pos // sqrt_board_size < board.board_size // sqrt_board_size - 1:
-                    highlight_pos += sqrt_board_size
-            elif key == curses.KEY_LEFT:
-                if highlight_pos % sqrt_board_size > 0:
-                    highlight_pos -= 1
-            elif key == curses.KEY_RIGHT:
-                if highlight_pos % sqrt_board_size < sqrt_board_size - 1:
-                    highlight_pos += 1
-
-            elif key == ord('q'):
+            if key == ord('q'):
                 return None
+            elif key in (ord('z'), ord('\n')):
+                pass
+            else:
+                cursor = self._move_cursor(key, cursor, board.board_size, sqrt_board_size)
+
+    def _move_cursor(self, key: int, cursor: int, board_size: int, sqrt_board_size: int) -> int:
+        if key in (curses.KEY_UP, ord('w')):
+            if cursor // sqrt_board_size > 0:
+                cursor -= sqrt_board_size
+        elif key in (curses.KEY_DOWN, ord('s')):
+            if cursor // sqrt_board_size < board_size // sqrt_board_size - 1:
+                cursor += sqrt_board_size
+        elif key in (curses.KEY_LEFT, ord('a')):
+            if cursor % sqrt_board_size > 0:
+                cursor -= 1
+        elif key in (curses.KEY_RIGHT, ord('d')):
+            if cursor % sqrt_board_size < sqrt_board_size - 1:
+                cursor += 1
+
+        return cursor
