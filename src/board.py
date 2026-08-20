@@ -6,6 +6,12 @@ class Board():
         self.board_size = board_size
         self.value_dict = {_: ' ' for _ in range(0, board_size)}
 
+    def is_valid_cell(self, index_cell: int) -> bool:
+        return self.value_dict[index_cell] == ' '
+
+    def update_value_dict(self, index_cell: int, symbol: str) -> None:
+        self.value_dict[index_cell] = symbol
+
     def draw(self, stdscr: curses.window, highlight_pos: int | None = None) -> None:
         sqrt_board_size = int(self.board_size ** 0.5)
         curses.curs_set(0)

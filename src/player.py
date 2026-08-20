@@ -13,7 +13,7 @@ class Player(ABC):
         return f"Имя: {self.name}, текущий счёт: {self.score}"
 
     @abstractmethod
-    def make_move(self, board: Board, stdscr: curses.window):
+    def make_move(self, board: Board, stdscr: curses.window) -> None:
         pass
 
 class HumanPlayer(Player):
@@ -33,7 +33,9 @@ class HumanPlayer(Player):
             if key == ord('q'):
                 return None
             elif key in (ord('z'), ord('\n')):
-                pass
+                if board.is_valid_cell(cursor):
+                    board.update_value_dict(cursor, self.symbol)
+                    return None
             else:
                 cursor = self._move_cursor(key, cursor, board.board_size, sqrt_board_size)
 
