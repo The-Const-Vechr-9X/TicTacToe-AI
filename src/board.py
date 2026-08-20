@@ -9,6 +9,54 @@ class Board():
     def is_valid_cell(self, index_cell: int) -> bool:
         return self.value_dict[index_cell] == ' '
 
+    def is_full(self) -> bool:
+        for i in range(self.board_size):
+
+            if ' ' == self.value_dict[i]:
+                return False
+
+        return True
+
+    def is_win(self, symbol: str) -> bool:
+        # TODO: Оптимизировать позже.
+        sqrt_board_size = int(self.board_size ** 0.5)
+
+        # По горизонтали
+        for i in range(0, self.board_size, sqrt_board_size):
+            if self.value_dict[i] == symbol and \
+                self.value_dict[i + 1] == symbol and \
+                    self.value_dict[i + 2] == symbol:
+                return True
+
+        # По вертикали
+        for i in range(sqrt_board_size):
+            if self.value_dict[i] == symbol and \
+                self.value_dict[i + sqrt_board_size] == symbol and \
+                    self.value_dict[i + sqrt_board_size * 2] == symbol:
+                return True
+
+        # По диагонали \
+        for i in range(self.board_size):
+            try:
+                if self.value_dict[i] == symbol and \
+                    self.value_dict[i + sqrt_board_size + 1] == symbol and \
+                        self.value_dict[i + sqrt_board_size * 2 + 2] == symbol:
+                    return True
+            except KeyError:
+                continue
+
+        # По диагонали /
+        for i in range(2, self.board_size):
+            try:
+                if self.value_dict[i] == symbol and \
+                    self.value_dict[i + sqrt_board_size - 1] == symbol and \
+                        self.value_dict[i + sqrt_board_size * 2 - 2] == symbol:
+                    return True
+            except KeyError:
+                continue
+
+        return False
+
     def update_value_dict(self, index_cell: int, symbol: str) -> None:
         self.value_dict[index_cell] = symbol
 
