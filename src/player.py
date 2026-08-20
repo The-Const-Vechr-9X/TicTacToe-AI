@@ -21,4 +21,27 @@ class HumanPlayer(Player):
         super().__init__(name, symbol, score)
 
     def make_move(self, board: Board, stdscr: curses.window):
-        pass
+        highlight_pos = 0
+        sqrt_board_size = int(board.board_size ** 0.5)
+        stdscr.keypad(True)
+
+        while True:
+            board.draw(stdscr, highlight_pos)
+
+            key = stdscr.getch()
+
+            if key == curses.KEY_UP:
+                if highlight_pos // sqrt_board_size > 0:
+                    highlight_pos -= sqrt_board_size
+            elif key == curses.KEY_DOWN:
+                if highlight_pos // sqrt_board_size < board.board_size // sqrt_board_size - 1:
+                    highlight_pos += sqrt_board_size
+            elif key == curses.KEY_LEFT:
+                if highlight_pos % sqrt_board_size > 0:
+                    highlight_pos -= 1
+            elif key == curses.KEY_RIGHT:
+                if highlight_pos % sqrt_board_size < sqrt_board_size - 1:
+                    highlight_pos += 1
+
+            elif key == ord('q'):
+                return None
