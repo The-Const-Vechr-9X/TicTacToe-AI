@@ -34,7 +34,7 @@ class HumanPlayer(Player):
                 return None
             elif key in (ord('z'), ord('\n')):
                 if board.is_valid_cell(cursor):
-                    board.update_value_dict(cursor, self.symbol)
+                    board.update_value_list(cursor, self.symbol)
                     return None
             else:
                 cursor = self._move_cursor(key, cursor, board.board_size, sqrt_board_size)
