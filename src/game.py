@@ -5,8 +5,10 @@ import curses
 
 class Game():
     def __init__(self) -> None:
-        self.board = Board()
-        self.players = []
+        self.players = [
+            HumanPlayer("Игрок 1", 'X'),
+            HumanPlayer("Игрок 2", 'O')
+        ]
         self.current_player_index = 0
         self.running = True
         self.buttons = {
@@ -27,8 +29,15 @@ class Game():
         curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
         cursor = 1
+        again = False
 
         while self.running:
+
+            if again == True:
+                self.play(stdscr)
+                again = self.play_again(stdscr)
+                stdscr.clear()
+                continue
 
             index = 1
 
@@ -51,6 +60,7 @@ class Game():
             elif key in (ord('z'), ord('\n')):
                 if cursor == 1:
                     self.play(stdscr)
+                    again = self.play_again(stdscr)
                     stdscr.clear()
                     continue
                 elif cursor == 2:
@@ -72,10 +82,7 @@ class Game():
         return cursor
 
     def play(self, stdscr: curses.window) -> None:
-        self.players = [
-            HumanPlayer("Игрок 1", 'X'),
-            HumanPlayer("Игрок 2", 'O')
-        ]
+        self.board = Board()
         self.current_player_index = 0
 
         while True:
@@ -92,21 +99,53 @@ class Game():
 
             self.current_player_index = 1 - self.current_player_index
 
-        self.board = Board()
-
     def play_again(self, stdscr: curses.window) -> bool:
-        pass
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+        stdscr.clear()
+        stdscr.addstr(0, 0, "Желаете сыграть снова?")
+
+        buttons = ["Да", "Нет"]
+        cursor = 1
+
+        while True:
+
+            index = 1
+
+            for button in buttons:
+
+                if index == cursor:
+                    stdscr.addstr(index, 0, f" > {button}", curses.color_pair(1))
+                else:
+                    stdscr.addstr(index, 0, f" - {button}")
+
+                index += 1
+
+            stdscr.refresh()
+            key = stdscr.getch()
+
+            if key in (ord('z'), ord('\n')):
+                if cursor == 1:
+                    return True
+                elif cursor == 2:
+                    return False
+            else:
+                cursor = self._move_cursor(key, cursor)
+
 
     def show_winner(self, stdscr: curses.window, player: HumanPlayer) -> None:
         stdscr.clear()
         self.board.draw(stdscr)
-        stdscr.addstr(10, 0, f"Победил {player.name}!")
+        stdscr.addstr(10, 0, f"Победил {player.name}!", curses.A_BOLD)
+        stdscr.addstr(11, 0, "Нажмите любую кнопку для продолжения.")
         stdscr.refresh()
         stdscr.getch()
 
     def show_draw(self, stdscr: curses.window) -> None:
         stdscr.clear()
         self.board.draw(stdscr)
-        stdscr.addstr(10, 0, "Ничья!")
+        stdscr.addstr(10, 0, "Ничья!", curses.A_BOLD)
+        stdscr.addstr(11, 0, "Нажмите любую кнопку для продолжения.")
         stdscr.refresh()
         stdscr.getch()
