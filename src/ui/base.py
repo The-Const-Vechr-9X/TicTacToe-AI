@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from board import Board
+from core.board import Board
 
 
 class UI(ABC):

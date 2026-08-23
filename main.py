@@ -1,5 +1,5 @@
 import curses
-from src.game import Game
+from src.core.game import Game
 
 
 def main(stdscr: curses.window):
