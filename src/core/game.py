@@ -9,7 +9,7 @@ class Game:
         self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
         self.current_player_index = 0
         self.running = True
-        self.buttons = {"play": "Играть", "settings": "Настройки"}
+        self.menu_options = ["Играть", "Настройки"]
         self.settings: dict[str, int | str] = {
             "board_size": 9,
             "mode": "pvp",
@@ -26,7 +26,7 @@ class Game:
                 again = self.play_again(ui)
                 continue
 
-            ui.show_menu(["Играть", "Настройки"], "Крестики-нолики", cursor_pos)
+            ui.show_menu(self.menu_options, "Крестики-нолики", cursor_pos)
 
             key = ui.get_key()
 
@@ -41,17 +41,17 @@ class Game:
                 elif cursor_pos == 2:
                     self.show_settings(ui)
             else:
-                cursor_pos = self._move_cursor(key, cursor_pos)
+                cursor_pos = self._move_menu_cursor(key, cursor_pos)
 
     def show_settings(self, ui: CursesUI) -> None:
         pass
 
-    def _move_cursor(self, key: str, cursor_pos: int) -> int:
+    def _move_menu_cursor(self, key: str, cursor_pos: int) -> int:
         if key == "up":
             if cursor_pos > 1:
                 cursor_pos -= 1
         elif key == "down":
-            if cursor_pos < len(self.buttons):
+            if cursor_pos < len(self.menu_options):
                 cursor_pos += 1
 
         return cursor_pos
@@ -87,7 +87,7 @@ class Game:
                 elif cursor_pos == 2:
                     return False
             else:
-                cursor_pos = self._move_cursor(key, cursor_pos)
+                cursor_pos = self._move_menu_cursor(key, cursor_pos)
 
     def show_winner(self, ui: CursesUI, player: HumanPlayer) -> None:
         ui.show_message(

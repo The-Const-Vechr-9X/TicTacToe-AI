@@ -16,9 +16,18 @@ class CursesUI(UI):
 
     def show_board(self, board: Board, cursor_pos: int) -> None:
         self.stdscr.clear()
+        self.stdscr.border(0)
 
+        height, width = self.stdscr.getmaxyx()
         sqrt_size = int(board.board_size**0.5)
-        y, x = 0, 0
+
+        board_height = sqrt_size * 2 + 1
+        board_width = 2 + 4 * sqrt_size
+
+        start_y = (height - board_height) // 2
+        start_x = (width - board_width) // 2 - 1
+
+        y, x = start_y, start_x
         index = 0
 
         for _ in range(sqrt_size):
@@ -40,22 +49,31 @@ class CursesUI(UI):
             self.stdscr.addstr(y, x, " | ")
 
             y += 1
-            x = 0
+            x = start_x
 
         self.stdscr.addstr(y, x, " -" + "----" * sqrt_size)
         self.stdscr.refresh()
 
     def show_menu(self, options: list[str], title: str, cursor_pos: int) -> None:
         self.stdscr.clear()
-        self.stdscr.addstr(0, 0, title, curses.A_BOLD)
+        self.stdscr.border(0)
 
-        y = 1
+        height, width = self.stdscr.getmaxyx()
+        menu_height = 2 + len(options)
 
-        for option in options:
-            if y == cursor_pos:
-                self.stdscr.addstr(y, 0, " > " + option, curses.color_pair(1))
+        start_y = (height - menu_height) // 2
+        start_x = (width - len(title)) // 2
+
+        self.stdscr.addstr(start_y, start_x, title, curses.A_BOLD)
+
+        y = start_y + 2
+        highlighted_line = y + cursor_pos - 1
+
+        for opt in options:
+            if y == highlighted_line:
+                self.stdscr.addstr(y, start_x, " > " + opt, curses.color_pair(1))
             else:
-                self.stdscr.addstr(y, 0, " - " + option)
+                self.stdscr.addstr(y, start_x, " - " + opt)
 
             y += 1
 
@@ -63,6 +81,7 @@ class CursesUI(UI):
 
     def show_message(self, text: str) -> None:
         self.stdscr.clear()
+        self.stdscr.border(0)
         self.stdscr.addstr(10, 0, text)
         self.stdscr.refresh()
         self.stdscr.getch()

@@ -39,11 +39,11 @@ class HumanPlayer(Player):
                     board.update_value_list(cursor_pos, self.symbol)
                     return
             else:
-                cursor_pos = self._move_cursor(
+                cursor_pos = self._move_board_cursor(
                     key, cursor_pos, board.board_size, sqrt_size
                 )
 
-    def _move_cursor(
+    def _move_board_cursor(
         self, key: str, cursor_pos: int, board_size: int, sqrt_size: int
     ) -> int:
         if key == "up":
