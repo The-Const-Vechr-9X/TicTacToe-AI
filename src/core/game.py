@@ -1,151 +1,98 @@
+from src.ui.curses_ui import CursesUI
+
 from .board import Board
 from .player import HumanPlayer
-import curses
 
 
-class Game():
+class Game:
     def __init__(self) -> None:
-        self.players = [
-            HumanPlayer("Игрок 1", 'X'),
-            HumanPlayer("Игрок 2", 'O')
-        ]
+        self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
         self.current_player_index = 0
         self.running = True
-        self.buttons = {
-            "play": "Играть",
-            "settings": "Настройки"
-        }
+        self.buttons = {"play": "Играть", "settings": "Настройки"}
         self.settings: dict[str, int | str] = {
             "board_size": 9,
             "mode": "pvp",
-            "difficulty": "medium"
+            "difficulty": "medium",
         }
 
-    def show_main_menu(self, stdscr: curses.window) -> None:
-        stdscr.clear()
-        curses.curs_set(0)
-
-        curses.start_color()
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-
-        cursor = 1
+    def show_main_menu(self, ui: CursesUI) -> None:
+        cursor_pos = 1
         again = False
 
         while self.running:
-
             if again == True:
-                self.play(stdscr)
-                again = self.play_again(stdscr)
-                stdscr.clear()
+                self.play(ui)
+                again = self.play_again(ui)
                 continue
 
-            index = 1
+            ui.show_menu(["Играть", "Настройки"], "Крестики-нолики", cursor_pos)
 
-            stdscr.addstr(0, 0, f"TicTacToe-AI", curses.A_BOLD)
+            key = ui.get_key()
 
-            for k in self.buttons:
-
-                if index == cursor:
-                    stdscr.addstr(index, 0, " > " + self.buttons[k], curses.color_pair(1))
-                else:
-                    stdscr.addstr(index, 0, " - " + self.buttons[k])
-
-                index += 1
-
-            stdscr.refresh()
-            key = stdscr.getch()
-
-            if key == ord('q'):
+            if key == "q":
                 self.running = False
-            elif key in (ord('z'), ord('\n')):
-                if cursor == 1:
-                    self.play(stdscr)
-                    again = self.play_again(stdscr)
-                    stdscr.clear()
+                break
+            elif key == "confirm":
+                if cursor_pos == 1:
+                    self.play(ui)
+                    again = self.play_again(ui)
                     continue
-                elif cursor == 2:
-                    self.show_settings(stdscr)
+                elif cursor_pos == 2:
+                    self.show_settings(ui)
             else:
-                cursor = self._move_cursor(key, cursor)
+                cursor_pos = self._move_cursor(key, cursor_pos)
 
-    def show_settings(self, stdscr: curses.window) -> None:
+    def show_settings(self, ui: CursesUI) -> None:
         pass
 
-    def _move_cursor(self, key: int, cursor: int) -> int:
-        if key in (curses.KEY_UP, ord('w')):
-            if cursor > 1:
-                cursor -= 1
-        elif key in (curses.KEY_DOWN, ord('s')):
-            if cursor < len(self.buttons):
-                cursor += 1
+    def _move_cursor(self, key: str, cursor_pos: int) -> int:
+        if key == "up":
+            if cursor_pos > 1:
+                cursor_pos -= 1
+        elif key == "down":
+            if cursor_pos < len(self.buttons):
+                cursor_pos += 1
 
-        return cursor
+        return cursor_pos
 
-    def play(self, stdscr: curses.window) -> None:
+    def play(self, ui: CursesUI) -> None:
         self.board = Board()
         self.current_player_index = 0
 
         while True:
             current = self.players[self.current_player_index]
-            current.make_move(self.board, stdscr)
+            current.make_move(self.board, ui)
 
             if self.board.is_win(current.symbol):
-                self.show_winner(stdscr, current)
+                self.show_winner(ui, current)
                 break
 
             if self.board.is_full():
-                self.show_draw(stdscr)
+                self.show_draw(ui)
                 break
 
             self.current_player_index = 1 - self.current_player_index
 
-    def play_again(self, stdscr: curses.window) -> bool:
-        curses.start_color()
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-
-        stdscr.clear()
-        stdscr.addstr(0, 0, "Желаете сыграть снова?")
-
-        buttons = ["Да", "Нет"]
-        cursor = 1
+    def play_again(self, ui: CursesUI) -> bool:
+        cursor_pos = 1
 
         while True:
+            ui.show_menu(["Да", "Нет"], "Желаете сыграть снова?", cursor_pos)
+            key = ui.get_key()
 
-            index = 1
-
-            for button in buttons:
-
-                if index == cursor:
-                    stdscr.addstr(index, 0, f" > {button}", curses.color_pair(1))
-                else:
-                    stdscr.addstr(index, 0, f" - {button}")
-
-                index += 1
-
-            stdscr.refresh()
-            key = stdscr.getch()
-
-            if key in (ord('z'), ord('\n')):
-                if cursor == 1:
+            if key == "confirm":
+                if cursor_pos == 1:
                     return True
-                elif cursor == 2:
+                elif cursor_pos == 2:
                     return False
             else:
-                cursor = self._move_cursor(key, cursor)
+                cursor_pos = self._move_cursor(key, cursor_pos)
 
+    def show_winner(self, ui: CursesUI, player: HumanPlayer) -> None:
+        ui.show_message(
+            f"Победил {player.name}!\nНажмите любую кнопку для продолжения."
+        )
 
-    def show_winner(self, stdscr: curses.window, player: HumanPlayer) -> None:
-        stdscr.clear()
-        self.board.draw(stdscr)
-        stdscr.addstr(10, 0, f"Победил {player.name}!", curses.A_BOLD)
-        stdscr.addstr(11, 0, "Нажмите любую кнопку для продолжения.")
-        stdscr.refresh()
-        stdscr.getch()
-
-    def show_draw(self, stdscr: curses.window) -> None:
-        stdscr.clear()
-        self.board.draw(stdscr)
-        stdscr.addstr(10, 0, "Ничья!", curses.A_BOLD)
-        stdscr.addstr(11, 0, "Нажмите любую кнопку для продолжения.")
-        stdscr.refresh()
-        stdscr.getch()
+    def show_draw(self, ui: CursesUI) -> None:
+        ui.show_message("Ничья!\nНажмите любую кнопку для продолжения.")
