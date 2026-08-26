@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 
-from core.board import Board
+from src.core.board import Board
 
 
 class UI(ABC):
     @abstractmethod
     def show_board(self, board: Board, cursor_pos: int) -> None: pass
     @abstractmethod
-    def show_menu(self, options: list[str], title: str, cursor: int) -> None: pass
+    def show_menu(self, options: list[str], title: str, cursor_pos: int) -> None: pass
     @abstractmethod
     def show_message(self, text: str) -> None: pass
     @abstractmethod
-    def get_key(self) -> int: pass
+    def get_key(self) -> str: pass
