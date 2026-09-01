@@ -8,8 +8,6 @@ class Game:
     def __init__(self) -> None:
         self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
         self.current_player_index = 0
-        self.running = True
-        self.menu_options = ["Играть", "Настройки"]
         self.settings: dict[str, int | str] = {
             "board_size": 9,
             "mode": "pvp",
@@ -17,42 +15,41 @@ class Game:
         }
 
     def show_main_menu(self, ui: UI) -> None:
-        cursor_pos = 1
         again = False
+        cursor_pos = 1
+        menu_options = ["Играть", "Настройки", "Выход"]
 
-        while self.running:
+        while True:
             if again == True:
                 self.play(ui)
                 again = self.play_again(ui)
                 continue
 
-            ui.show_menu(self.menu_options, "Крестики-нолики", cursor_pos)
+            ui.show_menu(menu_options, "Крестики-нолики", cursor_pos)
 
             key = ui.get_key()
 
-            if key == "q":
-                self.running = False
+            if key == "q" or key == "escape":
                 break
             elif key == "confirm":
                 if cursor_pos == 1:
                     self.play(ui)
                     again = self.play_again(ui)
-                    continue
                 elif cursor_pos == 2:
                     self.show_settings(ui)
+                elif cursor_pos == 3:
+                    break
             else:
-                cursor_pos = self._move_menu_cursor(key, cursor_pos)
+                cursor_pos = self._move_menu_cursor(key, cursor_pos, menu_options)
 
     def show_settings(self, ui: UI) -> None:
-        pass
+        ui.show_message(str(self.settings))
 
-    def _move_menu_cursor(self, key: str, cursor_pos: int) -> int:
-        if key == "up":
-            if cursor_pos > 1:
-                cursor_pos -= 1
-        elif key == "down":
-            if cursor_pos < len(self.menu_options):
-                cursor_pos += 1
+    def _move_menu_cursor(self, key: str, cursor_pos: int, menu_options: list[str]) -> int:
+        if key == "up" and cursor_pos > 1:
+            cursor_pos -= 1
+        elif key == "down" and cursor_pos < len(menu_options):
+            cursor_pos += 1
 
         return cursor_pos
 
@@ -77,9 +74,10 @@ class Game:
 
     def play_again(self, ui: UI) -> bool:
         cursor_pos = 1
+        menu_options = ["Да", "Нет"]
 
         while True:
-            ui.show_menu(["Да", "Нет"], "Желаете сыграть снова?", cursor_pos)
+            ui.show_menu(menu_options, "Желаете сыграть снова?", cursor_pos)
             key = ui.get_key()
 
             if key == "confirm":
@@ -88,7 +86,7 @@ class Game:
                 elif cursor_pos == 2:
                     return False
             else:
-                cursor_pos = self._move_menu_cursor(key, cursor_pos)
+                cursor_pos = self._move_menu_cursor(key, cursor_pos, menu_options)
 
     def show_winner(self, ui: UI, player: HumanPlayer) -> None:
         ui.show_message(
