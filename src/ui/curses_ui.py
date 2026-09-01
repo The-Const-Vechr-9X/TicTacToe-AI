@@ -82,7 +82,17 @@ class CursesUI(UI):
     def show_message(self, text: str) -> None:
         self.stdscr.clear()
         self.stdscr.border(0)
-        self.stdscr.addstr(10, 0, text)
+
+        lines = text.split("\n")
+
+        height, width = self.stdscr.getmaxyx()
+
+        start_y = (height - len(lines)) // 2
+        start_x = (width - max(len(line) for line in lines)) // 2
+
+        for i, line in enumerate(lines):
+            self.stdscr.addstr(start_y + i, start_x, line)
+
         self.stdscr.refresh()
         self.stdscr.getch()
 

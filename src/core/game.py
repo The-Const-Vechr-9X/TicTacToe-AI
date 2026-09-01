@@ -1,4 +1,4 @@
-from src.ui.curses_ui import CursesUI
+from src.ui.base import UI
 
 from .board import Board
 from .player import HumanPlayer
@@ -16,7 +16,7 @@ class Game:
             "difficulty": "medium",
         }
 
-    def show_main_menu(self, ui: CursesUI) -> None:
+    def show_main_menu(self, ui: UI) -> None:
         cursor_pos = 1
         again = False
 
@@ -43,7 +43,7 @@ class Game:
             else:
                 cursor_pos = self._move_menu_cursor(key, cursor_pos)
 
-    def show_settings(self, ui: CursesUI) -> None:
+    def show_settings(self, ui: UI) -> None:
         pass
 
     def _move_menu_cursor(self, key: str, cursor_pos: int) -> int:
@@ -56,13 +56,14 @@ class Game:
 
         return cursor_pos
 
-    def play(self, ui: CursesUI) -> None:
+    def play(self, ui: UI) -> None:
         self.board = Board()
         self.current_player_index = 0
 
         while True:
             current = self.players[self.current_player_index]
             current.make_move(self.board, ui)
+            # BUG: Если нажать Q, то игрок может пропустить свой ход.
 
             if self.board.is_win(current.symbol):
                 self.show_winner(ui, current)
@@ -74,7 +75,7 @@ class Game:
 
             self.current_player_index = 1 - self.current_player_index
 
-    def play_again(self, ui: CursesUI) -> bool:
+    def play_again(self, ui: UI) -> bool:
         cursor_pos = 1
 
         while True:
@@ -89,10 +90,10 @@ class Game:
             else:
                 cursor_pos = self._move_menu_cursor(key, cursor_pos)
 
-    def show_winner(self, ui: CursesUI, player: HumanPlayer) -> None:
+    def show_winner(self, ui: UI, player: HumanPlayer) -> None:
         ui.show_message(
-            f"Победил {player.name}!\nНажмите любую кнопку для продолжения."
+            f"Победил {player.name} ({player.symbol})!\nНажмите любую кнопку для продолжения."
         )
 
-    def show_draw(self, ui: CursesUI) -> None:
+    def show_draw(self, ui: UI) -> None:
         ui.show_message("Ничья!\nНажмите любую кнопку для продолжения.")
