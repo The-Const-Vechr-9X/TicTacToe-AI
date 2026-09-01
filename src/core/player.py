@@ -15,7 +15,7 @@ class Player(ABC):
         return f"Имя: {self.name}, текущий счёт: {self.score}"
 
     @abstractmethod
-    def make_move(self, board: Board, ui: UI) -> None:
+    def make_move(self, board: Board, ui: UI) -> bool:
         pass
 
 
@@ -23,7 +23,7 @@ class HumanPlayer(Player):
     def __init__(self, name: str, symbol: str, score: int = 0) -> None:
         super().__init__(name, symbol, score)
 
-    def make_move(self, board: Board, ui: UI) -> None:
+    def make_move(self, board: Board, ui: UI) -> bool:
         cursor_pos = 0
         sqrt_size = int(board.board_size**0.5)
 
@@ -33,11 +33,11 @@ class HumanPlayer(Player):
             key = ui.get_key()
 
             if key == "q":
-                return
+                return False
             elif key == "confirm":
                 if board.is_valid_cell(cursor_pos):
                     board.update_value_list(cursor_pos, self.symbol)
-                    return
+                    return True
             else:
                 cursor_pos = self._move_board_cursor(
                     key, cursor_pos, board.board_size, sqrt_size

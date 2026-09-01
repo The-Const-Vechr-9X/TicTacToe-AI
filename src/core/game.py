@@ -8,6 +8,7 @@ class Game:
     def __init__(self) -> None:
         self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
         self.current_player_index = 0
+        self.again = False
         self.settings: dict[str, int | str] = {
             "board_size": 9,
             "mode": "pvp",
@@ -15,14 +16,13 @@ class Game:
         }
 
     def show_main_menu(self, ui: UI) -> None:
-        again = False
         cursor_pos = 1
         menu_options = ["Играть", "Настройки", "Выход"]
 
         while True:
-            if again == True:
+            if self.again == True:
                 self.play(ui)
-                again = self.play_again(ui)
+                self.again = self.play_again(ui)
                 continue
 
             ui.show_menu(menu_options, "Крестики-нолики", cursor_pos)
@@ -33,8 +33,10 @@ class Game:
                 break
             elif key == "confirm":
                 if cursor_pos == 1:
+                    self.again = True
                     self.play(ui)
-                    again = self.play_again(ui)
+                    if self.again:
+                        self.again = self.play_again(ui)
                 elif cursor_pos == 2:
                     self.show_settings(ui)
                 elif cursor_pos == 3:
@@ -59,8 +61,9 @@ class Game:
 
         while True:
             current = self.players[self.current_player_index]
-            current.make_move(self.board, ui)
-            # BUG: Если нажать Q, то игрок может пропустить свой ход.
+            if not current.make_move(self.board, ui):
+                self.again = False
+                break
 
             if self.board.is_win(current.symbol):
                 self.show_winner(ui, current)
