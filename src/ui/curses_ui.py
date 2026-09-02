@@ -12,9 +12,11 @@ class CursesUI(UI):
 
         curses.curs_set(0)
         curses.start_color()
+        curses.use_default_colors()
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(2, curses.COLOR_CYAN, -1)
 
-    def show_board(self, board: Board, cursor_pos: int) -> None:
+    def show_board(self, board: Board, cursor_pos: int, symbol: str) -> None:
         self.stdscr.clear()
         self.stdscr.border(0)
 
@@ -35,13 +37,16 @@ class CursesUI(UI):
             y += 1
 
             for _ in range(index, index + sqrt_size):
+                self.stdscr.addstr(y, x, " | ")
                 if cursor_pos == index:
-                    self.stdscr.addstr(y, x, " | ")
-                    self.stdscr.addstr(
-                        y, x + 3, f"{board.value_list[index]}", curses.color_pair(1)
-                    )
+                    if board.value_list[index] == " ":
+                        self.stdscr.addstr(y, x + 3, f"{symbol}", curses.color_pair(2))
+                    else:
+                        self.stdscr.addstr(
+                            y, x + 3, f"{board.value_list[index]}", curses.color_pair(1)
+                        )
                 else:
-                    self.stdscr.addstr(y, x, f" | {board.value_list[index]}")
+                    self.stdscr.addstr(y, x + 3, f"{board.value_list[index]}")
 
                 index += 1
                 x += 4

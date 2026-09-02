@@ -28,7 +28,7 @@ class HumanPlayer(Player):
         sqrt_size = int(board.board_size**0.5)
 
         while True:
-            ui.show_board(board, cursor_pos)
+            ui.show_board(board, cursor_pos, self.symbol)
 
             key = ui.get_key()
 
