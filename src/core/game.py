@@ -20,10 +20,11 @@ class Game:
         menu_options = ["Играть", "Настройки", "Выход"]
 
         while True:
-            if self.again == True:
+            if self.again:
                 self.play(ui)
-                self.again = self.play_again(ui)
-                continue
+                if self.again:
+                    self.again = self.play_again(ui)
+                    continue
 
             ui.show_menu(menu_options, "Крестики-нолики", cursor_pos)
 
