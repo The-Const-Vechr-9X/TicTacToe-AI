@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from random import randint
+from time import sleep
 
 from src.ui.base import UI
 
@@ -60,3 +62,21 @@ class HumanPlayer(Player):
                 cursor_pos += 1
 
         return cursor_pos
+
+
+class AIPlayer(Player):
+    def __init__(self, name: str, symbol: str, score: int = 0) -> None:
+        super().__init__(name, symbol, score)
+
+    def make_move(self, board: Board, ui: UI) -> bool:
+        for _ in range(3):
+            cursor_pos = randint(0, board.board_size - 1)
+            ui.show_board(board, cursor_pos, self.symbol)
+            sleep(0.2)
+
+        while True:
+            cursor_pos = randint(0, board.board_size - 1)
+
+            if board.is_valid_cell(cursor_pos):
+                board.update_value_list(cursor_pos, self.symbol)
+                return True

@@ -1,12 +1,15 @@
 from src.ui.base import UI
 
 from .board import Board
-from .player import HumanPlayer
+from .player import AIPlayer, HumanPlayer, Player
 
 
 class Game:
     def __init__(self) -> None:
-        self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
+        self.players: list[Player] = [
+            HumanPlayer("Игрок", "X"),
+            AIPlayer("Компьютер", "O"),
+        ]
         self.current_player_index = 0
         self.play_again_requested = False
         self.settings: dict[str, int | str] = {
@@ -48,7 +51,9 @@ class Game:
     def show_settings(self, ui: UI) -> None:
         ui.show_message(str(self.settings))
 
-    def _move_menu_cursor(self, key: str, cursor_pos: int, menu_options: list[str]) -> int:
+    def _move_menu_cursor(
+        self, key: str, cursor_pos: int, menu_options: list[str]
+    ) -> int:
         if key == "up" and cursor_pos > 1:
             cursor_pos -= 1
         elif key == "down" and cursor_pos < len(menu_options):
@@ -57,7 +62,7 @@ class Game:
         return cursor_pos
 
     def play(self, ui: UI) -> None:
-        self.board = Board()
+        self.board = Board(int(self.settings["board_size"]))
         self.current_player_index = 0
 
         while True:
@@ -92,7 +97,7 @@ class Game:
             else:
                 cursor_pos = self._move_menu_cursor(key, cursor_pos, menu_options)
 
-    def show_winner(self, ui: UI, player: HumanPlayer) -> None:
+    def show_winner(self, ui: UI, player: Player) -> None:
         ui.show_message(
             f"Победил {player.name} ({player.symbol})!\nНажмите любую кнопку для продолжения."
         )
