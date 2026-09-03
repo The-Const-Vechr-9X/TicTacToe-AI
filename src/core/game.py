@@ -8,7 +8,7 @@ class Game:
     def __init__(self) -> None:
         self.players = [HumanPlayer("Игрок 1", "X"), HumanPlayer("Игрок 2", "O")]
         self.current_player_index = 0
-        self.again = False
+        self.play_again_requested = False
         self.settings: dict[str, int | str] = {
             "board_size": 9,
             "mode": "pvp",
@@ -20,10 +20,10 @@ class Game:
         menu_options = ["Играть", "Настройки", "Выход"]
 
         while True:
-            if self.again:
+            if self.play_again_requested:
                 self.play(ui)
-                if self.again:
-                    self.again = self.play_again(ui)
+                if self.play_again_requested:
+                    self.play_again_requested = self.ask_play_again(ui)
                     continue
 
             ui.show_menu(menu_options, "Крестики-нолики", cursor_pos)
@@ -34,10 +34,10 @@ class Game:
                 break
             elif key == "confirm":
                 if cursor_pos == 1:
-                    self.again = True
+                    self.play_again_requested = True
                     self.play(ui)
-                    if self.again:
-                        self.again = self.play_again(ui)
+                    if self.play_again_requested:
+                        self.play_again_requested = self.ask_play_again(ui)
                 elif cursor_pos == 2:
                     self.show_settings(ui)
                 elif cursor_pos == 3:
@@ -63,7 +63,7 @@ class Game:
         while True:
             current = self.players[self.current_player_index]
             if not current.make_move(self.board, ui):
-                self.again = False
+                self.play_again_requested = False
                 break
 
             if self.board.is_win(current.symbol):
@@ -76,7 +76,7 @@ class Game:
 
             self.current_player_index = 1 - self.current_player_index
 
-    def play_again(self, ui: UI) -> bool:
+    def ask_play_again(self, ui: UI) -> bool:
         cursor_pos = 1
         menu_options = ["Да", "Нет"]
 
