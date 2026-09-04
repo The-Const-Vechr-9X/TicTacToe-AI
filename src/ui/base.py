@@ -5,6 +5,10 @@ from src.core.board import Board
 
 class UI(ABC):
     @abstractmethod
+    def show_ai_thinking(self, board: Board, positions: list[int], symbol: str) -> None:
+        pass
+
+    @abstractmethod
     def show_board(self, board: Board, cursor_pos: int, symbol: str) -> None:
         pass
 

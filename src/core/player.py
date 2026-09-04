@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from random import randint
-from time import sleep
 
 from src.ui.base import UI
 
@@ -69,10 +68,8 @@ class AIPlayer(Player):
         super().__init__(name, symbol, score)
 
     def make_move(self, board: Board, ui: UI) -> bool:
-        for _ in range(3):
-            cursor_pos = randint(0, board.board_size - 1)
-            ui.show_board(board, cursor_pos, self.symbol)
-            sleep(0.2)
+        positions = [randint(0, board.board_size - 1) for _ in range(3)]
+        ui.show_ai_thinking(board, positions, self.symbol)
 
         while True:
             cursor_pos = randint(0, board.board_size - 1)

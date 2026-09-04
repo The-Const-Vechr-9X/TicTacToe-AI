@@ -1,4 +1,5 @@
 import curses
+from time import sleep
 
 from src.core.board import Board
 
@@ -15,6 +16,11 @@ class CursesUI(UI):
         curses.use_default_colors()
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(2, curses.COLOR_CYAN, -1)
+
+    def show_ai_thinking(self, board: Board, positions: list[int], symbol: str) -> None:
+        for pos in positions:
+            self.show_board(board, pos, symbol)
+            sleep(0.2)
 
     def show_board(self, board: Board, cursor_pos: int, symbol: str) -> None:
         self.stdscr.clear()
