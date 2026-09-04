@@ -1,14 +1,14 @@
 from src.ui.base import UI
 
 from .board import Board
-from .player import AIPlayer, HumanPlayer, Player
+from .player import HumanPlayer, Player, RandomAIPlayer
 
 
 class Game:
     def __init__(self) -> None:
         self.players: list[Player] = [
             HumanPlayer("Игрок", "X"),
-            AIPlayer("Компьютер", "O"),
+            RandomAIPlayer("Компьютер", "O"),
         ]
         self.current_player_index = 0
         self.play_again_requested = False

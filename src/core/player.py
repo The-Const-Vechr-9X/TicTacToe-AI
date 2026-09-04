@@ -63,7 +63,16 @@ class HumanPlayer(Player):
         return cursor_pos
 
 
-class AIPlayer(Player):
+class AIPlayer(Player, ABC):
+    def __init__(self, name: str, symbol: str, score: int = 0) -> None:
+        super().__init__(name, symbol, score)
+
+    @abstractmethod
+    def make_move(self, board: Board, ui: UI) -> bool:
+        pass
+
+
+class RandomAIPlayer(AIPlayer):
     def __init__(self, name: str, symbol: str, score: int = 0) -> None:
         super().__init__(name, symbol, score)
 
