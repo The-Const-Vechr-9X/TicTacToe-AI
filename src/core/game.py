@@ -2,6 +2,7 @@ from src.ui.base import UI
 
 from .board import Board
 from .player import HumanPlayer, Player, RandomAIPlayer
+from .settings import Settings
 
 
 class Game:
@@ -12,11 +13,7 @@ class Game:
         ]
         self.current_player_index = 0
         self.play_again_requested = False
-        self.settings: dict[str, int | str] = {
-            "board_size": 9,
-            "mode": "pvp",
-            "difficulty": "medium",
-        }
+        self.settings = Settings()
 
     def show_main_menu(self, ui: UI) -> None:
         cursor_pos = 1
@@ -49,7 +46,7 @@ class Game:
                 cursor_pos = self._move_menu_cursor(key, cursor_pos, menu_options)
 
     def show_settings(self, ui: UI) -> None:
-        ui.show_message(str(self.settings))
+        ui.show_message(str(self.settings.to_dict()))
 
     def _move_menu_cursor(
         self, key: str, cursor_pos: int, menu_options: list[str]
@@ -62,7 +59,7 @@ class Game:
         return cursor_pos
 
     def play(self, ui: UI) -> None:
-        self.board = Board(int(self.settings["board_size"]))
+        self.board = Board(int(self.settings.board_size))
         self.current_player_index = 0
 
         while True:
