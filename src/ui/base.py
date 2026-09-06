@@ -21,5 +21,9 @@ class UI(ABC):
         pass
 
     @abstractmethod
+    def show_settings(self, parameters: dict[str, str], cursor_pos: int) -> None:
+        pass
+
+    @abstractmethod
     def get_key(self) -> str:
         pass

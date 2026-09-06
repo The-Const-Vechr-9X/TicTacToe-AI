@@ -78,7 +78,7 @@ class CursesUI(UI):
         self.stdscr.addstr(start_y, start_x, title, curses.A_BOLD)
 
         y = start_y + 2
-        highlighted_line = y + cursor_pos - 1
+        highlighted_line = y + cursor_pos
 
         for opt in options:
             if y == highlighted_line:
@@ -106,6 +106,38 @@ class CursesUI(UI):
 
         self.stdscr.refresh()
         self.stdscr.getch()
+
+    def show_settings(self, parameters: dict[str, str], cursor_pos: int) -> None:
+        self.stdscr.clear()
+        self.stdscr.border(0)
+
+        height, width = self.stdscr.getmaxyx()
+        longest_parameter = max(len(key) + len(value) for key, value in parameters.items())
+
+        start_y = (height - len(parameters)) // 2
+        start_x = (width - longest_parameter - 8) // 2
+
+        start_value_x = start_x + max(len(key) for key in parameters.keys()) + 2
+        end_value_x = start_value_x + max(len(value) for value in parameters)
+
+        y, x = start_y, start_x
+        highlighted_line = y + cursor_pos
+
+        for key, value in parameters.items():
+            key += ": "
+            value_x = (end_value_x - start_value_x - len(value)) // 2 + start_value_x
+
+            if y == highlighted_line:
+                value = f" < {value} > "
+                self.stdscr.addstr(y, x, key)
+                self.stdscr.addstr(y, value_x - 3, value, curses.color_pair(1))
+            else:
+                self.stdscr.addstr(y, x, key)
+                self.stdscr.addstr(y, value_x, value)
+
+            y += 1
+
+        self.stdscr.refresh()
 
     def get_key(self) -> str:
         key = self.stdscr.getch()
