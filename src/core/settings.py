@@ -39,6 +39,16 @@ class Settings:
         self.difficulty = "medium"
         self.create_settings()
 
+    def formatted_settings(self) -> dict[str, str]:
+        sqrt_size = int(self.board_size**0.5)
+        result: dict[str, str] = {
+            "Размер доски": f"{sqrt_size}x{sqrt_size}",
+            "Режим игры": self.mode,
+            "Сложность": self.difficulty
+        }
+
+        return result
+
     def to_dict(self) -> dict[str, int | str]:
         result: dict[str, int | str] = {
             "board_size": self.board_size,
