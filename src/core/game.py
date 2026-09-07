@@ -1,16 +1,13 @@
 from src.ui.base import UI
 
 from .board import Board
-from .player import HumanPlayer, Player, RandomAIPlayer
+from .player import Player, PlayerFactory
 from .settings import Settings
 
 
 class Game:
     def __init__(self, settings: Settings) -> None:
-        self.players: list[Player] = [
-            HumanPlayer("Игрок", "X"),
-            RandomAIPlayer("Компьютер", "O"),
-        ]
+        self.players = PlayerFactory.create_players(settings)
         self.current_player_index = 0
         self.play_again_requested = False
         self.settings = settings

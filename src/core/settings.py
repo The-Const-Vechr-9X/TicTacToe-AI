@@ -36,7 +36,7 @@ class Settings:
     def reset_settings(self) -> None:
         self.board_size = 9
         self.mode = "pve"
-        self.difficulty = "medium"
+        self.difficulty = "easy"
         self.create_settings()
 
     def formatted_settings(self) -> dict[str, str]:

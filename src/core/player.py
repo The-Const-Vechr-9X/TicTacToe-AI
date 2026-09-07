@@ -4,6 +4,7 @@ from random import randint
 from src.ui.base import UI
 
 from .board import Board
+from .settings import Settings
 
 
 class Player(ABC):
@@ -18,6 +19,34 @@ class Player(ABC):
     @abstractmethod
     def make_move(self, board: Board, ui: UI) -> bool:
         pass
+
+
+class PlayerFactory:
+    @staticmethod
+    def create_players(settings: Settings) -> list[Player]:
+        players: list[Player] = []
+
+        if settings.mode == "pvp":
+            human_players = [
+                HumanPlayer("Игрок 1", "X"),
+                HumanPlayer("Игрок 2", "O"),
+            ]
+            players.extend(human_players)
+        elif settings.mode == "pve":
+            players.append(HumanPlayer("Игрок", "X"))
+
+            if settings.difficulty == "easy":
+                players.append(RandomAIPlayer("Компьютер", "O"))
+            elif settings.difficulty == "medium":
+                players.append(RandomAIPlayer("Компьютер", "O"))  # TODO: Заменить на Minimax
+            elif settings.difficulty == "hard":
+                players.append(RandomAIPlayer("Компьютер", "O"))  # TODO: Заменить на ML
+            else:
+                raise ValueError(f"Неизвестная сложность игры: {settings.difficulty}")
+        else:
+            raise ValueError(f"Неизвестный режим игры: {settings.mode}")
+
+        return players
 
 
 class HumanPlayer(Player):
