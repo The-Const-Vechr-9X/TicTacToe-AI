@@ -6,14 +6,14 @@ from .settings import Settings
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self, settings: Settings) -> None:
         self.players: list[Player] = [
             HumanPlayer("Игрок", "X"),
             RandomAIPlayer("Компьютер", "O"),
         ]
         self.current_player_index = 0
         self.play_again_requested = False
-        self.settings = Settings()
+        self.settings = settings
 
     def show_main_menu(self, ui: UI) -> None:
         cursor_pos = 0
