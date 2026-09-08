@@ -19,9 +19,10 @@ class Settings:
         try:
             with open(self.FILENAME, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                self.board_size = data["board_size"]
                 self.mode = data["mode"]
                 self.difficulty = data["difficulty"]
+                self.board_size = data["board_size"]
+                self.line_length = data["line_length"]
         except (json.JSONDecodeError, KeyError, FileNotFoundError):
             self.reset_settings()
 
@@ -30,29 +31,32 @@ class Settings:
             json.dump(self.to_dict(), f, ensure_ascii=False, indent=4)
 
     def reset_settings(self) -> None:
-        self.board_size = 9
         self.mode = "pve"
         self.difficulty = "easy"
+        self.board_size = 9
+        self.line_length = 3
         self.create_settings()
 
     def formatted_settings(self) -> dict[str, str]:
-        sqrt_size = int(self.board_size**0.5)
         mode_names = {"pvp": "PvP", "pve": "PvE"}
         difficulty_names = {"easy": "Легко", "medium": "Средне", "hard": "Сложно"}
+        sqrt_size = int(self.board_size**0.5)
 
         result: dict[str, str] = {
-            "Размер доски": f"{sqrt_size}x{sqrt_size}",
             "Режим игры": mode_names.get(self.mode, self.mode),
-            "Сложность": difficulty_names.get(self.difficulty, self.difficulty)
+            "Сложность": difficulty_names.get(self.difficulty, self.difficulty),
+            "Размер доски": f"{sqrt_size}x{sqrt_size}",
+            "Длина линии": str(self.line_length),
         }
 
         return result
 
     def to_dict(self) -> dict[str, int | str]:
         result: dict[str, int | str] = {
-            "board_size": self.board_size,
             "mode": self.mode,
             "difficulty": self.difficulty,
+            "board_size": self.board_size,
+            "line_length": self.line_length,
         }
 
         return result
@@ -74,16 +78,20 @@ class Settings:
 
         value = options[index]
 
-        if current_key == "board_size":
+        if current_key in ("board_size", "line_length"):
             return int(value)
         return value
+
+    def is_valid_line_length(self) -> bool:
+        return int(self.board_size**0.5) >= self.line_length
 
     @staticmethod
     def possible_values() -> dict[str, list[str]]:
         result = {
-            "board_size": ["9", "16", "25", "36"],
             "mode": ["pvp", "pve"],
             "difficulty": ["easy", "medium", "hard"],
+            "board_size": ["9", "16", "25", "36"],
+            "line_length": ["3", "4", "5", "6"],
         }
 
         return result

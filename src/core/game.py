@@ -47,7 +47,9 @@ class Game:
         options = list(self.settings.to_dict().keys())
 
         while True:
-            ui.show_settings(self.settings.formatted_settings(), "Настройки", cursor_pos)
+            ui.show_settings(
+                self.settings.formatted_settings(), "Настройки", cursor_pos
+            )
 
             key = ui.get_key()
             cursor_pos = self._move_menu_cursor(key, cursor_pos, options)
@@ -58,6 +60,12 @@ class Game:
                 self.settings.read_settings()
                 break
             elif key == "confirm":
+                if not self.settings.is_valid_line_length():
+                    ui.show_message(
+                        "Длина линии не может быть больше количества ячеек поля в ряд!"
+                    )
+                    continue
+
                 self.settings.update_settings()
                 self.players = PlayerFactory.create_players(self.settings)
 
@@ -83,7 +91,7 @@ class Game:
                 self.play_again_requested = False
                 break
 
-            if self.board.is_win(current.symbol):
+            if self.board.is_win(current.symbol, self.settings.line_length):
                 self.show_winner(ui, current)
                 break
 
