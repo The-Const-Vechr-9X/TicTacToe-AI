@@ -39,7 +39,12 @@ class Settings:
 
     def formatted_settings(self) -> dict[str, str]:
         mode_names = {"pvp": "PvP", "pve": "PvE"}
-        difficulty_names = {"easy": "Легко", "medium": "Средне", "hard": "Сложно"}
+        difficulty_names = {
+            "easy": "Легко",
+            "normal": "Нормал",
+            "medium": "Средне",
+            "hard": "Сложно",
+        }
         sqrt_size = int(self.board_size**0.5)
 
         result: dict[str, str] = {
@@ -89,7 +94,7 @@ class Settings:
     def possible_values() -> dict[str, list[str]]:
         result = {
             "mode": ["pvp", "pve"],
-            "difficulty": ["easy", "medium", "hard"],
+            "difficulty": ["easy", "normal", "medium", "hard"],
             "board_size": ["9", "16", "25", "36"],
             "line_length": ["3", "4", "5", "6"],
         }

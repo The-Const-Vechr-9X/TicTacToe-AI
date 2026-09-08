@@ -37,8 +37,14 @@ class PlayerFactory:
 
             if settings.difficulty == "easy":
                 players.append(RandomAIPlayer("Компьютер", "O"))
+            elif settings.difficulty == "normal":
+                players.append(
+                    HeuristicAIPlayer("Компьютер", "O", settings.line_length)
+                )
             elif settings.difficulty == "medium":
-                players.append(RandomAIPlayer("Компьютер", "O"))  # TODO: Заменить на Minimax
+                players.append(
+                    RandomAIPlayer("Компьютер", "O")
+                )  # TODO: Заменить на Minimax
             elif settings.difficulty == "hard":
                 players.append(RandomAIPlayer("Компьютер", "O"))  # TODO: Заменить на ML
             else:
@@ -96,10 +102,6 @@ class AIPlayer(Player, ABC):
     def __init__(self, name: str, symbol: str, score: int = 0) -> None:
         super().__init__(name, symbol, score)
 
-    @abstractmethod
-    def make_move(self, board: Board, ui: UI) -> bool:
-        pass
-
 
 class RandomAIPlayer(AIPlayer):
     def __init__(self, name: str, symbol: str, score: int = 0) -> None:
@@ -115,3 +117,67 @@ class RandomAIPlayer(AIPlayer):
             if board.is_valid_cell(cursor_pos):
                 board.update_value_list(cursor_pos, self.symbol)
                 return True
+
+
+class HeuristicAIPlayer(AIPlayer):
+    def __init__(
+        self, name: str, symbol: str, line_length: int, score: int = 0
+    ) -> None:
+        super().__init__(name, symbol, score)
+        self.line_length = line_length
+
+    def make_move(self, board: Board, ui: UI) -> bool:
+        positions = [randint(0, board.board_size - 1) for _ in range(3)]
+        ui.show_ai_thinking(board, positions, self.symbol)
+
+        while True:
+            cursor_pos = self._calculate_next_move(board)
+
+            if board.is_valid_cell(cursor_pos):
+                board.update_value_list(cursor_pos, self.symbol)
+                return True
+
+    def _calculate_next_move(self, board: Board) -> int:
+        empty_cells = [i for i, cell in enumerate(board.value_list) if cell == " "]
+        enemy_symbol = " "
+        best_move = -1
+
+        for symbol in board.value_list:
+            if symbol not in (" ", self.symbol):
+                enemy_symbol = symbol
+                break
+
+        for i in empty_cells:
+            if not board.is_valid_cell(i):
+                continue
+
+            board.update_value_list(i, self.symbol)
+
+            if not board.is_win(self.symbol, self.line_length):
+                for j in empty_cells:
+                    if j == i or not board.is_valid_cell(j):
+                        continue
+
+                    board.update_value_list(j, enemy_symbol)
+
+                    if board.is_win(enemy_symbol, self.line_length):
+                        board.update_value_list(j, " ")
+                        best_move = j
+                        break
+
+                    board.update_value_list(j, " ")
+            else:
+                board.update_value_list(i, " ")
+                best_move = i
+                break
+
+            board.update_value_list(i, " ")
+
+        if best_move == -1:
+            while True:
+                best_move = randint(0, board.board_size - 1)
+
+                if board.is_valid_cell(best_move):
+                    break
+
+        return best_move
