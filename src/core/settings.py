@@ -25,11 +25,7 @@ class Settings:
         except (json.JSONDecodeError, KeyError, FileNotFoundError):
             self.reset_settings()
 
-    def update_settings(self, board_size: int, mode: str, difficulty: str) -> None:
-        self.board_size = board_size
-        self.mode = mode
-        self.difficulty = difficulty
-
+    def update_settings(self) -> None:
         with open(self.FILENAME, "w", encoding="utf-8") as f:
             json.dump(self.to_dict(), f, ensure_ascii=False, indent=4)
 
@@ -44,7 +40,7 @@ class Settings:
         result: dict[str, str] = {
             "Размер доски": f"{sqrt_size}x{sqrt_size}",
             "Режим игры": self.mode,
-            "Сложность": self.difficulty
+            "Сложность": self.difficulty,
         }
 
         return result
@@ -54,6 +50,37 @@ class Settings:
             "board_size": self.board_size,
             "mode": self.mode,
             "difficulty": self.difficulty,
+        }
+
+        return result
+
+    def get_next_value(self, key: str, current_key: str) -> int | str:
+        if key not in ("left", "right"):
+            return getattr(self, current_key)
+
+        options = self.possible_values().get(current_key, [])
+        index = options.index(str(getattr(self, current_key)))
+
+        if key == "left":
+            index -= 1
+        elif key == "right":
+            if index == len(options) - 1:
+                index = 0
+            else:
+                index += 1
+
+        value = options[index]
+
+        if current_key == "board_size":
+            return int(value)
+        return value
+
+    @staticmethod
+    def possible_values() -> dict[str, list[str]]:
+        result = {
+            "board_size": ["9", "16", "25", "36"],
+            "mode": ["pvp", "pve"],
+            "difficulty": ["easy", "medium", "hard"],
         }
 
         return result

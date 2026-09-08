@@ -43,7 +43,25 @@ class Game:
                 cursor_pos = self._move_menu_cursor(key, cursor_pos, menu_options)
 
     def show_settings(self, ui: UI) -> None:
-        ui.show_message(str(self.settings.to_dict()))
+        cursor_pos = 0
+        options = list(self.settings.to_dict().keys())
+
+        while True:
+            ui.show_settings(self.settings.formatted_settings(), cursor_pos)
+
+            key = ui.get_key()
+            cursor_pos = self._move_menu_cursor(key, cursor_pos, options)
+            current_key = options[cursor_pos]
+            new_value = self.settings.get_next_value(key, current_key)
+
+            if key == "q" or key == "escape":
+                self.settings.read_settings()
+                break
+            elif key == "confirm":
+                self.settings.update_settings()
+                self.players = PlayerFactory.create_players(self.settings)
+
+            setattr(self.settings, current_key, new_value)
 
     def _move_menu_cursor(
         self, key: str, cursor_pos: int, menu_options: list[str]
