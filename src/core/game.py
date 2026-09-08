@@ -47,7 +47,7 @@ class Game:
         options = list(self.settings.to_dict().keys())
 
         while True:
-            ui.show_settings(self.settings.formatted_settings(), cursor_pos)
+            ui.show_settings(self.settings.formatted_settings(), "Настройки", cursor_pos)
 
             key = ui.get_key()
             cursor_pos = self._move_menu_cursor(key, cursor_pos, options)

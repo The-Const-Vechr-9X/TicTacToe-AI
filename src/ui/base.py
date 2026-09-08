@@ -21,7 +21,7 @@ class UI(ABC):
         pass
 
     @abstractmethod
-    def show_settings(self, parameters: dict[str, str], cursor_pos: int) -> None:
+    def show_settings(self, parameters: dict[str, str], title: str, cursor_pos: int) -> None:
         pass
 
     @abstractmethod

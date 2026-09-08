@@ -37,10 +37,13 @@ class Settings:
 
     def formatted_settings(self) -> dict[str, str]:
         sqrt_size = int(self.board_size**0.5)
+        mode_names = {"pvp": "PvP", "pve": "PvE"}
+        difficulty_names = {"easy": "Легко", "medium": "Средне", "hard": "Сложно"}
+
         result: dict[str, str] = {
             "Размер доски": f"{sqrt_size}x{sqrt_size}",
-            "Режим игры": self.mode,
-            "Сложность": self.difficulty,
+            "Режим игры": mode_names.get(self.mode, self.mode),
+            "Сложность": difficulty_names.get(self.difficulty, self.difficulty)
         }
 
         return result
