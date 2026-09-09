@@ -127,15 +127,17 @@ class HeuristicAIPlayer(AIPlayer):
         self.line_length = line_length
 
     def make_move(self, board: Board, ui: UI) -> bool:
-        positions = [randint(0, board.board_size - 1) for _ in range(3)]
-        ui.show_ai_thinking(board, positions, self.symbol)
+        cursor_pos = self._calculate_next_move(board)
+        positions = [_ for _ in range(cursor_pos)]
+        ui.show_ai_thinking(board, positions, self.symbol, 0.1)
 
         while True:
-            cursor_pos = self._calculate_next_move(board)
+            if not board.is_valid_cell(cursor_pos):
+                cursor_pos = self._calculate_next_move(board)
+                continue
 
-            if board.is_valid_cell(cursor_pos):
-                board.update_value_list(cursor_pos, self.symbol)
-                return True
+            board.update_value_list(cursor_pos, self.symbol)
+            return True
 
     def _calculate_next_move(self, board: Board) -> int:
         empty_cells = [i for i, cell in enumerate(board.value_list) if cell == " "]
