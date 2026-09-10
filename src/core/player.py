@@ -43,8 +43,8 @@ class PlayerFactory:
                 )
             elif settings.difficulty == "medium":
                 players.append(
-                    RandomAIPlayer("Компьютер", "O")
-                )  # TODO: Заменить на Minimax
+                    MinimaxAIPlayer("Компьютер", "O", settings.line_length)
+                )
             elif settings.difficulty == "hard":
                 players.append(RandomAIPlayer("Компьютер", "O"))  # TODO: Заменить на ML
             else:
@@ -183,3 +183,98 @@ class HeuristicAIPlayer(AIPlayer):
                     break
 
         return best_move
+
+
+class MinimaxAIPlayer(AIPlayer): # TODO: В разработке
+    def __init__(
+            self, name: str, symbol: str, line_length: int, score: int = 0, max_depth: int = 5
+        ) -> None:
+        super().__init__(name, symbol, score)
+        self.line_length = line_length
+        self.max_depth = max_depth
+
+    def make_move(self, board: Board, ui: UI) -> bool:
+        cursor_pos = self._calculate_next_move(board)
+        positions = [_ for _ in range(cursor_pos)]
+        ui.show_ai_thinking(board, positions, self.symbol, 0.1)
+
+        while True:
+            if not board.is_valid_cell(cursor_pos):
+                return False
+
+            board.update_value_list(cursor_pos, self.symbol)
+            return True
+
+    def evaluate(self, board: Board) -> int:
+        enemy_symbol = self.get_enemy_symbol(board)
+        result = 0
+
+        if board.is_win(self.symbol, self.line_length):
+            result = 10
+        elif board.is_win(enemy_symbol, self.line_length):
+            result = -10
+        elif board.is_full():
+            result = 0
+
+        return result
+
+    def _calculate_next_move(self, board: Board) -> int:
+        empty_cells = self.get_empty_cells(board)
+        best_move = -1
+        best_value = float("-inf")
+
+        for i in empty_cells:
+            board.update_value_list(i, self.symbol)
+            value = self._minimax(board, 1, False)
+            board.update_value_list(i, " ")
+
+            if value > best_value:
+                best_value = value
+                best_move = i
+
+        return best_move
+
+    def _minimax(self, board: Board, depth: int, is_maximizing: bool) -> int:
+        score = self.evaluate(board)
+        if score != 0 or board.is_full():
+            return score
+
+        if depth >= self.max_depth:
+            return self.evaluate(board)
+
+        if is_maximizing:
+            best = float("-inf")
+        else:
+            best = float("inf")
+
+        empty_cells = self.get_empty_cells(board)
+        enemy_symbol = self.get_enemy_symbol(board)
+
+        if is_maximizing:
+            for cell in empty_cells:
+                board.update_value_list(cell, self.symbol)
+                value = self._minimax(board, depth+1, False)
+                board.update_value_list(cell, " ")
+                best = max(best, value)
+        else:
+            for cell in empty_cells:
+                board.update_value_list(cell, enemy_symbol)
+                value = self._minimax(board, depth+1, True)
+                board.update_value_list(cell, " ")
+                best = min(best, value)
+
+        return int(best)
+
+    def get_empty_cells(self, board: Board) -> list[int]:
+        empty_cells = [i for i, cell in enumerate(board.value_list) if cell == " "]
+        return empty_cells
+
+    def get_enemy_symbol(self, board: Board) -> str:
+        enemy_symbol = "X"
+
+        for symbol in board.value_list:
+            if symbol not in (" ", self.symbol):
+                enemy_symbol = symbol
+                break
+
+        return enemy_symbol
