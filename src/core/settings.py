@@ -95,8 +95,8 @@ class Settings:
         result = {
             "mode": ["pvp", "pve"],
             "difficulty": ["easy", "normal", "medium", "hard"],
-            "board_size": ["9", "16", "25", "36"],
-            "line_length": ["3", "4", "5", "6"],
+            "board_size": ["9", "25", "49", "81"],
+            "line_length": ["3", "4", "5"],
         }
 
         return result
