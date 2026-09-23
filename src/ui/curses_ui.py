@@ -117,10 +117,10 @@ class CursesUI(UI):
         longest_parameter = max(len(key) + len(value) for key, value in parameters.items())
 
         start_y = (height - len(parameters) - 2) // 2
-        start_x = (width - longest_parameter - 8) // 2
+        start_x = (width - longest_parameter - 11) // 2
 
-        start_value_x = start_x + max(len(key) for key in parameters.keys()) + 2
-        end_value_x = start_value_x + max(len(value) for value in parameters)
+        start_value_x = start_x + max(len(key) for key in parameters) + 5
+        end_value_x = start_value_x + max(len(value) for value in parameters.values())
 
         self.stdscr.addstr(start_y, start_x, title, curses.A_BOLD)
 
@@ -128,15 +128,15 @@ class CursesUI(UI):
         highlighted_line = y + cursor_pos
 
         for key, value in parameters.items():
-            key += ": "
+            key += ":    "
             value_x = (end_value_x - start_value_x - len(value)) // 2 + start_value_x
+
+            self.stdscr.addstr(y, x, key)
 
             if y == highlighted_line:
                 value = f" < {value} > "
-                self.stdscr.addstr(y, x, key)
                 self.stdscr.addstr(y, value_x - 3, value, curses.color_pair(1))
             else:
-                self.stdscr.addstr(y, x, key)
                 self.stdscr.addstr(y, value_x, value)
 
             y += 1
