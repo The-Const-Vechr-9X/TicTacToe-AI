@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tictactoe-ai"
+description = "Terminal Tic-Tac-Toe with an AI opponent"
+readme = "README.md"
+requires-python = ">=3.11"
+version = "0.1.0"
+dependencies = [
+    "windows-curses>=2.4.2; sys_platform == 'win32'",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.4",
+]
+test = [
+    "pytest~=9.1.1",
+]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--import-mode=importlib"
+]
+testpaths = ["tests"]
+pythonpath = ["."]
