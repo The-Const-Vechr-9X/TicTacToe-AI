@@ -4,6 +4,13 @@ class Board:
         self.value_list = [" " for _ in range(board_size)]
 
     def is_valid_cell(self, index_cell: int) -> bool:
+        if type(index_cell) is not int:
+            raise TypeError(f"index_cell must be int, got {type(index_cell).__name__}")
+        if not 0 <= index_cell < self.board_size:
+            raise IndexError(
+                f"index_cell must be in range [0, {self.board_size - 1}], got {index_cell}"
+            )
+
         return self.value_list[index_cell] == " "
 
     def is_full(self) -> bool:
