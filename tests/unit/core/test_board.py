@@ -7,6 +7,10 @@ from src.core.board import Board
 FILLED_BOARD = [" ", "X", "O", " ", "O", "X", "X", " ", "O"]
 FIRST_FILLED_BOARD = ["X", "X", "O", " ", "O", "X", "X", " ", "O"]
 LAST_EMPTY_BOARD = [" ", "X", "O", " ", "O", "X", "X", " ", " "]
+FULL_BOARD = ["X", "X", "O", "O", "O", "X", "X", "X", "O"]
+EMPTY_BOARD = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+ONE_FILLED_BOARD = [" ", " ", " ", " ", "X", " ", " ", " ", " "]
+ONE_EMPTY_BOARD = ["X", "X", "O", "O", "O", "X", " ", "X", "O"]
 
 
 @pytest.fixture
@@ -73,3 +77,20 @@ def test_is_valid_cell_raises(
 
     with pytest.raises(exc):
         board.is_valid_cell(index_cell)
+
+
+@pytest.mark.parametrize(
+    "value_list, expected",
+    [
+        (FILLED_BOARD, False),
+        (FULL_BOARD, True),
+        (EMPTY_BOARD, False),
+        (ONE_FILLED_BOARD, False),
+        (ONE_EMPTY_BOARD, False),
+    ],
+    ids=["filled", "full", "empty", "one-filled", "one-empty"],
+)
+def test_is_full(board: Board, value_list: list[str], expected: bool) -> None:
+    board.value_list = value_list
+
+    assert board.is_full() == expected
