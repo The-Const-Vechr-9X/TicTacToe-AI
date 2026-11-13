@@ -209,3 +209,33 @@ def test_is_win(
     board.value_list = value_list
 
     assert board.is_win(symbol, line_length) == expected
+
+
+@pytest.mark.parametrize(
+    "value_list, index_cell, symbol, expected",
+    [
+        (EMPTY_BOARD, 0, "X", ["X", " ", " ", " ", " ", " ", " ", " ", " "]),
+        (EMPTY_BOARD, 8, "X", [" ", " ", " ", " ", " ", " ", " ", " ", "X"]),
+        (EMPTY_BOARD, 4, "O", [" ", " ", " ", " ", "O", " ", " ", " ", " "]),
+        (FULL_BOARD, 0, "O", ["O", "X", "O", "O", "O", "X", "X", "X", "O"]),
+        (FILLED_BOARD, 8, "X", [" ", "X", "O", " ", "O", "X", "X", " ", "X"]),
+    ],
+    ids=[
+        "x-first",
+        "x-last",
+        "o-middle",
+        "o-overwrite-first",
+        "x-overwrite-last",
+    ],
+)
+def test_update_value_list(
+    board: Board,
+    value_list: list[str],
+    index_cell: int,
+    symbol: str,
+    expected: list[str],
+) -> None:
+    board.value_list = value_list.copy()
+    board.update_value_list(index_cell, symbol)
+
+    assert board.value_list == expected
